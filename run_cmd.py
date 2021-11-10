@@ -1,8 +1,4 @@
 from subprocess import Popen, PIPE as l
-# import logging
-
-# logger = logging.getLogger(__name__)
-# logger.setLevel(logging.DEBUG)
 from pysimplelog import Logger
 from inspect import getframeinfo, currentframe
 
