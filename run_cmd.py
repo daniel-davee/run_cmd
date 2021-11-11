@@ -4,7 +4,7 @@ from inspect import getframeinfo, currentframe
 
 logger = Logger(__name__)
 logger.set_log_file_basename('run_cmd')
-logger.set_minimum_level(logger.logLevels['debug'])
+logger.set_minimum_level(logger.logLevels['info'])
 
 
 def run_cmd(cmd:str, split=False):
