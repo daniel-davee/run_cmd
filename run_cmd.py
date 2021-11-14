@@ -30,4 +30,4 @@ def run_cmd(cmd:str, split=False):
                         """
         logger.error(error_msg, stack_info= True)
         raise OSError(err)
-    return out.decode().split('\n') if split else out.decode()
+    return [o for o in out.decode().split('\n') if o] if split else out.decode()
