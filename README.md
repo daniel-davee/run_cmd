@@ -1,2 +1,2 @@
 # run_cmd
-run bash comand
+run bash comand in python, without using Popen.
