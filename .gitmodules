@@ -1,3 +1,0 @@
-[submodule "test_magic"]
-	path = test_magic
-	url = git@github.com:daniel-davee/test_magic.git
