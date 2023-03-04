@@ -1,3 +1,4 @@
+from typing import List
 from subprocess import Popen, PIPE as l
 from pysimplelog import Logger
 from inspect import getframeinfo, currentframe
@@ -7,11 +8,20 @@ logger.set_log_file_basename('run_cmd')
 logger.set_minimum_level(logger.logLevels['info'])
 
 
-def run_cmd(cmd:str, split=False):
+def run_cmd(cmd:str, split:bool=False) -> List[str] or str:
+    """
+    A simple wrapper for Popon to run shell commands from python
     
-    '''
-    run_cmd in python with out Popen
-    '''
+    Args:
+        cmd str: The comanda you want to run
+        example: ls
+    Raises:
+        OSError: If the command throws an error this  captures it. 
+        example: ls /does_not_exist
+    Returns:
+        List[str] or str: This is output of the cmd, either as a string or
+        as list which is the string spilt on endline.
+    """    
     
     debug_msg = f"""########
                   {getframeinfo(currentframe())=}
