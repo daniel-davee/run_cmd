@@ -1,4 +1,5 @@
 from typing import List
+from dataclasses import dataclass
 from subprocess import Popen, PIPE as l
 from pysimplelog import Logger
 from inspect import getframeinfo, currentframe
@@ -7,6 +8,24 @@ logger = Logger(__name__)
 logger.set_log_file_basename('run_cmd')
 logger.set_minimum_level(logger.logLevels['info'])
 
+@dataclass
+class Script():
+    
+    '''
+        Allows you write bash scripts in python code.
+        script = Scripts()
+        script.cmds = """
+                        ls
+                        echo "an"
+                       """
+        script()
+    '''
+    cmds:str = ''
+    
+    def __call__(self):
+        commmand_list: List[str] = self.cmds.split('\n')
+        commmand_list = [cmd.strip() for cmd in commmand_list if cmd]
+        return map(run_cmd,commmand_list)
 
 def run_cmd(cmd:str, split:bool=False) -> List[str] or str:
     """

@@ -23,7 +23,7 @@ poetry add run-cmd
 
 This will install this code and all of its dependencies.
 
-Usage:
+# Usage:
 
 To use this code, you can simply import the run_cmd function:
 
@@ -46,3 +46,16 @@ You can also specify whether you want the output to be returned as a list or a s
 run_cmd('ls', split=True)
 
 This will output the result as a list, with each element being one line of output.
+
+# Script
+
+
+
+```python
+        script = Scripts()
+        script.cmds = """
+                        ls
+                        echo "an"
+                       """
+        script()
+```
