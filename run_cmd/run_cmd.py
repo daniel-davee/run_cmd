@@ -1,4 +1,4 @@
-from typing import List
+from typing import Union, Iterator 
 from dataclasses import dataclass
 from subprocess import Popen, PIPE as l
 from pysimplelog import Logger
@@ -22,12 +22,12 @@ class Script():
     '''
     cmds:str = ''
     
-    def __call__(self):
-        commmand_list: List[str] = self.cmds.split('\n')
+    def __call__(self) -> Iterator[str]:
+        commmand_list: list[str] = self.cmds.split('\n')
         commmand_list = [cmd.strip() for cmd in commmand_list if cmd]
         return map(run_cmd,commmand_list)
 
-def run_cmd(cmd:str, split:bool=False) -> List[str] or str:
+def run_cmd(cmd:str, split:bool=False) -> Union[list[str],str] or str:
     """
     A simple wrapper for Popon to run shell commands from python
     
