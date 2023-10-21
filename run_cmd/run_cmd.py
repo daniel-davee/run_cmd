@@ -3,6 +3,7 @@ from typing import Union, Callable, Any
 from subprocess import Popen, PIPE as l
 from pysimplelog import Logger
 from inspect import getframeinfo, currentframe
+from pathlib import Path
 logger = Logger(__name__)
 logger.set_log_file_basename('run_cmd')
 logger.set_minimum_level(logger.logLevels['info'])
@@ -87,3 +88,8 @@ class Script():
 
     def append(self,cmd:Union[Script,str])->None:
         self.cmds += cmd
+        
+    def writefile(self,name:str='shell.sh') -> Path:
+        (file_:=Path(name)).write_text(self.cmds)
+        return file_
+        

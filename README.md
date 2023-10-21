@@ -76,13 +76,17 @@ to run a script just call its name followed by ().
         echo "The white space are ignored"
         ''')
         script()
-        #All these outputs are actual in a list
-        # This is a line
-        #The white space are ignored
         script += 'echo "you can add string"'
         script += Script('echo "or another Script"')
         script.append("And you can append too")
-        #you can add string
+        script()
+        #[
+        # This is a line,
+        #The white space are ignored,
+        #you can add string,
         #or another Script
-        #And you can append too
+        #And you can append too,
+        #]
+        #Write to a file and return the path
+        shell_script:Path = script.writefile(name="shell.sh")
 ```
