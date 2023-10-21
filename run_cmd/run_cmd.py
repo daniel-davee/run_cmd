@@ -85,5 +85,5 @@ class Script():
     def __call__(self,*args,**kwargs) -> list[str]:
         return self.engine(self.cmds,*args,**kwargs) 
 
-    def append(self,cmd:str)->None:
+    def append(self,cmd:Union[Script,str])->None:
         self.cmds += cmd

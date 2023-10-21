@@ -1,6 +1,19 @@
-# run_cmd
+# Magic Run Command
 
-This code is a simple wrapper for Popen to run shell commands from python. The required version of python is 3.8 or above.
+This provide a clean way to express scripts inside your python code.
+The run engine will be shell by default.
+This will allow you to run shell scripts from your python code.
+```python
+from run_cmd.run_cmd import Script
+
+cmd = Script('''
+        ls
+        touch test.py
+        ls
+        rm test.py
+        ''')
+restults:list[str] = cmd()
+```
 
 ## Installation:
 
@@ -9,7 +22,7 @@ This code is a simple wrapper for Popen to run shell commands from python. The r
 You can install it via pip:
 
 ```
-pip install run-cmd
+pip install magic-run-cmd
 ```
 ### poetry
 
@@ -18,14 +31,15 @@ To install this code, you will need to first install Poetry (https://python-poet
 Once you have Poetry installed, you can install this code by running the following command from the root directory of this code:
 
 ```
-poetry add run-cmd
+poetry add magic-run-cmd
 ```
 
 This will install this code and all of its dependencies.
 
 # Usage:
 
-To use this code, you can simply import the run_cmd function:
+To run a simple shell command you can use run_cmd.
+This is what the shell engine uses under the hood:
 
 ```python
 from run_cmd.run_cmd import run_cmd
@@ -48,14 +62,27 @@ run_cmd('ls', split=True)
 This will output the result as a list, with each element being one line of output.
 
 # Script
-
+Scripts allow you express you script inside your python code inside triple quote.
+The extra white spaces are removed so format as needed.
+Scripts can be append using append(str).
+Or you can add str or other Scripts.
+Since the scripts are callable,
+to run a script just call its name followed by ().
 
 
 ```python
-        script = Scripts()
-        script.cmds = """
-                        ls
-                        echo "an"
-                       """
+        script = Scripts('''
+        echo "This is a line"
+        echo "The white space are ignored"
+        ''')
         script()
+        #All these outputs are actual in a list
+        # This is a line
+        #The white space are ignored
+        script += 'echo "you can add string"'
+        script += Script('echo "or another Script"')
+        script.append("And you can append too")
+        #you can add string
+        #or another Script
+        #And you can append too
 ```
