@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "magic-run-cmd"
-version = "1.1.1"
-description = "A simple interface to run a bash command from python. It wraps Popen, so  it's easier to run the command. You can use Script object to write pretty bash scripts in python."
+version = "2.0.0"
+description = "Provides a clean way to express scripts such as shell or sql inside your python code.."
 authors = ["daniel davee <daniel.v.davee@gmail.com>"]
 license = "Apache 2.0"
 readme = "README.md"
