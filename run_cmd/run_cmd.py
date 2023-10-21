@@ -1,5 +1,4 @@
-from typing import Union, Iterator 
-from dataclasses import dataclass
+from typing import Union, Callable, Any 
 from subprocess import Popen, PIPE as l
 from pysimplelog import Logger
 from inspect import getframeinfo, currentframe
@@ -8,26 +7,7 @@ logger = Logger(__name__)
 logger.set_log_file_basename('run_cmd')
 logger.set_minimum_level(logger.logLevels['info'])
 
-@dataclass
-class Script():
-    
-    '''
-        Allows you write bash scripts in python code.
-        script = Scripts()
-        script.cmds = """
-                        ls
-                        echo "an"
-                       """
-        script()
-    '''
-    cmds:str = ''
-    
-    def __call__(self) -> Iterator[str]:
-        commmand_list: list[str] = self.cmds.split('\n')
-        commmand_list = [cmd.strip() for cmd in commmand_list if cmd]
-        return map(run_cmd,commmand_list)
-
-def run_cmd(cmd:str, split:bool=False) -> Union[list[str],str] or str:
+def run_cmd(cmd:str, split:bool=False) -> Union[list[str],str]:
     """
     A simple wrapper for Popon to run shell commands from python
     
@@ -60,3 +40,41 @@ def run_cmd(cmd:str, split:bool=False) -> Union[list[str],str] or str:
         logger.error(error_msg, stack_info= True)
         raise OSError(err)
     return [o for o in out.decode().split('\n') if o] if split else out.decode()
+
+def shell(cmds:str,split=False):
+        commmand_list: list[str] = cmds.split('\n')
+        commmand_list = [cmd.strip() for cmd in commmand_list if cmd]
+        return [run_cmd(cmd,split=split) for cmd in commmand_list]
+    
+class Script():
+    
+    '''
+        Allows you write bash scripts in python code.
+        script = Scripts()
+        script.cmds = """
+                        ls
+                        echo "an"
+                       """
+        script()
+    '''
+    
+    def __init__(self,
+                 cmds:str='',
+                 engine:Callable[[str,Any],Union[list[str],str]]=shell):
+        self.cmds:str = cmds
+        self.engine: Callable[[str],Union[list[str],str]] = engine
+
+    def __add__(self,cmd:str)->str:
+        return '\n'.join([self.cmds,cmd])
+    
+    def __repr__(self) -> str:
+        return self.cmds.__repr__
+    
+    def __str__(self) -> str:
+        return self.cmds
+     
+    def append(self,cmd:str)->None:
+        self.cmds += cmd
+    
+    def __call__(self,*args,**kwargs) -> list[str]:
+        return self.engine(self.cmds,*args,**kwargs) 

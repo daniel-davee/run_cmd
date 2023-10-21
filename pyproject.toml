@@ -8,12 +8,13 @@ readme = "README.md"
 packages = [{include = "run_cmd"}]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.9"
 pysimplelog = "^4.0.0"
 
 
 [tool.poetry.group.dev.dependencies]
 chat-companion = "^0.1.6"
+ipython = "^8.16.1"
 
 [build-system]
 requires = ["poetry-core"]
