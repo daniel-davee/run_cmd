@@ -1,8 +1,8 @@
+from __future__ import annotations
 from typing import Union, Callable, Any 
 from subprocess import Popen, PIPE as l
 from pysimplelog import Logger
 from inspect import getframeinfo, currentframe
-
 logger = Logger(__name__)
 logger.set_log_file_basename('run_cmd')
 logger.set_minimum_level(logger.logLevels['info'])
@@ -64,17 +64,26 @@ class Script():
         self.cmds:str = cmds
         self.engine: Callable[[str],Union[list[str],str]] = engine
 
-    def __add__(self,cmd:str)->str:
-        return '\n'.join([self.cmds,cmd])
+    def __add__(self,cmd: Union[Script,str])->str:
+        match(cmd):
+            case str():cmds:str =  '\n'.join([self.cmds,cmd])
+            case Script() if self.engine!=cmd.engine:
+                raise Exception(f'{self.engine.__name__} do not match {cmd.engine.__name__}')
+            case Script():cmds:str = '\n'.join([self.cmds,cmd.cmd])
+        return Script(cmds)
+    
+    def __iadd__(self,cmd: Union[Script,str])->Script:
+        self = self + cmd
+        return self
     
     def __repr__(self) -> str:
-        return self.cmds.__repr__
+        return self.cmds
     
     def __str__(self) -> str:
         return self.cmds
      
-    def append(self,cmd:str)->None:
-        self.cmds += cmd
-    
     def __call__(self,*args,**kwargs) -> list[str]:
         return self.engine(self.cmds,*args,**kwargs) 
+
+    def append(self,cmd:str)->None:
+        self.cmds += cmd
