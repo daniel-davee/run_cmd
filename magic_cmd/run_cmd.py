@@ -1,12 +1,22 @@
-from __future__ import annotations
 from typing import Union, Callable, Any 
 from subprocess import Popen, PIPE as l
 from pysimplelog import Logger
 from inspect import getframeinfo, currentframe
 from pathlib import Path
+from paramiko import SSHClient, AutoAddPolicy
+from dataclasses import dataclass
 logger = Logger(__name__)
 logger.set_log_file_basename('run_cmd')
 logger.set_minimum_level(logger.logLevels['info'])
+
+def run_ssh_cmd(ssh_cmd: SSH_Cmd) -> tuple[str, str]:
+    (ip, key_file, username), cmd = ssh_cmd
+    client = SSHClient()
+    client.load_host_keys(know_host.as_posix())
+    client.set_missing_host_key_policy(AutoAddPolicy())
+    client.connect(ip,username=username, key_filename=key_file)
+    _, stdout, stderr = client.exec_command(cmd)
+    return stdout.read().decode(), stderr.read().decode()
 
 def run_cmd(cmd:str, split:bool=False) -> Union[list[str],str]:
     """
@@ -47,49 +57,3 @@ def shell(cmds:str,split=False):
         commmand_list = [cmd.strip() for cmd in commmand_list if cmd]
         return [run_cmd(cmd,split=split) for cmd in commmand_list]
     
-class Script():
-    
-    '''
-        Allows you write bash scripts in python code.
-        script = Scripts()
-        script.cmds = """
-                        ls
-                        echo "an"
-                       """
-        script()
-    '''
-    
-    def __init__(self,
-                 cmds:str='',
-                 engine:Callable[[str,Any],Union[list[str],str]]=shell):
-        self.cmds:str = cmds
-        self.engine: Callable[[str],Union[list[str],str]] = engine
-
-    def __add__(self,cmd: Union[Script,str])->str:
-        match(cmd):
-            case str():cmds:str =  '\n'.join([self.cmds,cmd])
-            case Script() if self.engine!=cmd.engine:
-                raise Exception(f'{self.engine.__name__} do not match {cmd.engine.__name__}')
-            case Script():cmds:str = '\n'.join([self.cmds,cmd.cmd])
-        return Script(cmds)
-    
-    def __iadd__(self,cmd: Union[Script,str])->Script:
-        self = self + cmd
-        return self
-    
-    def __repr__(self) -> str:
-        return self.cmds
-    
-    def __str__(self) -> str:
-        return self.cmds
-     
-    def __call__(self,*args,**kwargs) -> list[str]:
-        return self.engine(self.cmds,*args,**kwargs) 
-
-    def append(self,cmd:Union[Script,str])->None:
-        self.cmds += cmd
-        
-    def writefile(self,name:str='shell.sh') -> Path:
-        (file_:=Path(name)).write_text(self.cmds)
-        return file_
-        

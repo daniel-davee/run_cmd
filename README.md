@@ -4,7 +4,7 @@ This provide a clean way to express scripts inside your python code.
 The run engine will be shell by default.
 This will allow you to run shell scripts from your python code.
 ```python
-from run_cmd.run_cmd import Script
+from magic_cmd.script import Script
 
 cmd = Script('''
         ls
@@ -42,7 +42,7 @@ To run a simple shell command you can use run_cmd.
 This is what the shell engine uses under the hood:
 
 ```python
-from run_cmd.run_cmd import run_cmd
+from magic_cmd.run_cmd import run_cmd
 
 print(run_cmd('ls'))
 
