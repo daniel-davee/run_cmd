@@ -1,5 +1,12 @@
 from __future__ import annotations
-from typing import Union, Callable, Any 
+from typing import (
+                    Union, 
+                    Callable, 
+)
+from pathlib import Path
+from magic_cmd.engine import Engine 
+from magic_cmd.run_cmd import Shell
+
 
 class Script():
     
@@ -15,9 +22,11 @@ class Script():
     
     def __init__(self,
                  cmds:str='',
-                 engine:Callable[[str,Any],Union[list[str],str]]=shell):
+                 name:str= 'script',
+                 engine:Engine=Shell,
+                )
         self.cmds:str = cmds
-        self.engine: Callable[[str],Union[list[str],str]] = engine
+        self.engine:Engine = engine
 
     def __add__(self,cmd: Union[Script,str])->str:
         match(cmd):
@@ -37,13 +46,16 @@ class Script():
     def __str__(self) -> str:
         return self.cmds
      
-    def __call__(self,*args,**kwargs) -> list[str]:
-        return self.engine(self.cmds,*args,**kwargs) 
+    def __call__(self,
+                 lazy:bool=False,
+                 name:str='lazy',
+                 split:bool='False'
+                 *args,**kwargs) -> Union[Path,list[str]]:
+        if lazy:
+            return self.engine.write(self.cmds,name=name)
+        return self.engine.run(self.cmds,split=split)
+        
 
     def append(self,cmd:Union[Script,str])->None:
         self.cmds += cmd
-        
-    def writefile(self,name:str='shell.sh') -> Path:
-        (file_:=Path(name)).write_text(self.cmds)
-        return file_
         

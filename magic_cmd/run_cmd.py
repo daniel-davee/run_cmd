@@ -1,22 +1,40 @@
-from typing import Union, Callable, Any 
+from typing import Union,NamedTuple 
+from pathlib import Path
 from subprocess import Popen, PIPE as l
 from pysimplelog import Logger
 from inspect import getframeinfo, currentframe
-from pathlib import Path
 from paramiko import SSHClient, AutoAddPolicy
-from dataclasses import dataclass
+from json import dumps
 logger = Logger(__name__)
 logger.set_log_file_basename('run_cmd')
 logger.set_minimum_level(logger.logLevels['info'])
 
-def run_ssh_cmd(ssh_cmd: SSH_Cmd) -> tuple[str, str]:
-    (ip, key_file, username), cmd = ssh_cmd
+know_host = Path.home()/'.ssh/known_hosts'
+
+class SSH_Connection(NamedTuple):
+    ip: str
+    key_file: str
+    username: str
+
+def run_ssh_cmd(cmd:str,
+                connection:SSH_Connection, 
+                split:bool=False
+                ) -> tuple[str, str]:
+    ip, key_file, username = connection
     client = SSHClient()
     client.load_host_keys(know_host.as_posix())
     client.set_missing_host_key_policy(AutoAddPolicy())
     client.connect(ip,username=username, key_filename=key_file)
-    _, stdout, stderr = client.exec_command(cmd)
-    return stdout.read().decode(), stderr.read().decode()
+    _, out, err = client.exec_command(cmd)
+    out:str = out.read().decode()
+    err:str = err.read().decode()
+    if err:
+        error_msg = f"""There was an error:
+                        {err}
+                        """
+        logger.error(error_msg, stack_info= True)
+        raise OSError(err)
+    return [o for o in out.split('\n') if o] if split else out
 
 def run_cmd(cmd:str, split:bool=False) -> Union[list[str],str]:
     """
@@ -52,8 +70,33 @@ def run_cmd(cmd:str, split:bool=False) -> Union[list[str],str]:
         raise OSError(err)
     return [o for o in out.decode().split('\n') if o] if split else out.decode()
 
-def shell(cmds:str,split=False):
+
+class Shell():
+    
+    def run(cmds:str,split:bool):
         commmand_list: list[str] = cmds.split('\n')
         commmand_list = [cmd.strip() for cmd in commmand_list if cmd]
         return [run_cmd(cmd,split=split) for cmd in commmand_list]
+    
+    def writefile(self,cmds:str,name:str='shell') -> Path:
+        (file_:=Path(name+'.sh')).write_text(cmds)
+        return file_
+    
+class SSH_Shell():
+    
+    def __init__(self,connection:SSH_Connection):
+        self.connection:SSH_Connection = connection
+    
+    def run(self,cmds:str,split:bool):
+        commmand_list: list[str] = cmds.split('\n')
+        commmand_list = [cmd.strip() for cmd in commmand_list if cmd]
+        return [run_ssh_cmd(cmd,self.connection,split=split)
+                for cmd in commmand_list]
+    
+    def writefile(self,cmds:str,name:str='shell') -> Path:
+        (file_:=Path(name+'.sh')).write_text(dumps({
+                                                'connection':self.connection
+                                                ,'cmds':cmds,
+                                                }))
+        return file_
     
