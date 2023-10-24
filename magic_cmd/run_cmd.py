@@ -93,7 +93,7 @@ class SSH_Shell():
         return [run_ssh_cmd(cmd,self.connection,split=split)
                 for cmd in commmand_list]
     
-    def writefile(self,cmds:str,name:str='shell') -> Path:
+    def write(self,cmds:str,name:str='shell') -> Path:
         (file_:=Path(name+'.sh')).write_text(dumps({
                                                 'connection':self.connection
                                                 ,'cmds':cmds,

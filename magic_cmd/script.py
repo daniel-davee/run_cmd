@@ -24,9 +24,10 @@ class Script():
                  cmds:str='',
                  name:str= 'script',
                  engine:Engine=Shell,
-                )
+                ):
         self.cmds:str = cmds
         self.engine:Engine = engine
+        self.name:str = name
 
     def __add__(self,cmd: Union[Script,str])->str:
         match(cmd):
@@ -49,7 +50,7 @@ class Script():
     def __call__(self,
                  lazy:bool=False,
                  name:str='lazy',
-                 split:bool='False'
+                 split:bool='False',
                  *args,**kwargs) -> Union[Path,list[str]]:
         if lazy:
             return self.engine.write(self.cmds,name=name)
