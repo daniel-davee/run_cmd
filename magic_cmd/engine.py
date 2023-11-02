@@ -1,8 +1,13 @@
 from typing import Protocol, Union
 
 class Engine(Protocol):
-    
-    def run(cmds:Union[str,list[str]],*args,**kwargs):
+
+    name:str
+        
+    def run(cmds:Union[str,list[str]],*args,**kwargs)->str:
         ...
-    def write(cmds:Union[str,list[str]],*args,**kwargs):
+    def write(cmds:Union[str,list[str]],*args,**kwargs)->None:
         ...
+    def clean(cmds:Union[str,list[str]],*args,**kwargs)->str:
+        ...
+

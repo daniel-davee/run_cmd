@@ -23,7 +23,7 @@ class Script():
     def __init__(self,
                  cmds:str='',
                  name:str= 'script',
-                 engine:Engine=Shell,
+                 engine:Engine=Shell(),
                 ):
         self.cmds:str = cmds
         self.engine:Engine = engine
@@ -31,15 +31,14 @@ class Script():
 
     def __add__(self,cmd: Union[Script,str])->str:
         match(cmd):
-            case str():cmds:str =  '\n'.join([self.cmds,cmd])
-            case Script() if self.engine!=cmd.engine:
-                raise Exception(f'{self.engine.__name__} do not match {cmd.engine.__name__}')
-            case Script():cmds:str = '\n'.join([self.cmds,cmd.cmd])
-        return Script(cmds)
+            case str(): cmd = self.engine.clean(cmd)
+            case Script() if self.engine.__class__!=cmd.engine.__class__: 
+                raise Exception(f'{cmd.engine.__class__} does not match{self.engine.__class__}')
+            case Script(): cmd = cmd.cmds
+        return Script('\n'.join([self.cmds,cmd]))
     
     def __iadd__(self,cmd: Union[Script,str])->Script:
-        self = self + cmd
-        return self
+        return (self:=self + cmd)
     
     def __repr__(self) -> str:
         return self.cmds
