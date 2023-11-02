@@ -25,8 +25,8 @@ class Script():
                  name:str= 'script',
                  engine:Engine=Shell(),
                 ):
-        self.cmds:str = cmds
         self.engine:Engine = engine
+        self.cmds:str = self.engine.clean(cmds)
         self.name:str = name
 
     def __add__(self,cmd: Union[Script,str])->str:
