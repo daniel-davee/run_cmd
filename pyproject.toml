@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "magic-run-cmd"
-version = "2.1.1"
+version = "2.2.1"
 description = "Provides a clean way to express scripts such as shell or sql inside your python code.."
 authors = ["daniel davee <daniel.v.davee@gmail.com>"]
 license = "Apache 2.0"
