@@ -5,6 +5,7 @@ from pysimplelog import Logger
 from inspect import getframeinfo, currentframe
 from paramiko import SSHClient, AutoAddPolicy
 from json import dumps
+from icecream.icecream import ic
 logger = Logger(__name__)
 logger.set_log_file_basename('run_cmd')
 logger.set_minimum_level(logger.logLevels['info'])
@@ -38,10 +39,11 @@ def run_cmd(cmd:str, split:bool=False) -> Union[list[str],str]:
     logger.debug(debug_msg)
     
     if err:
-        error_msg = f"""There was an error:
-                        {err}
+        error_msg = f"""{ic(cmd)} gave an error:
+                        {ic(err)}
                         """
-        logger.error(error_msg, stack_info= True)
+        ic(error_msg)
+        logger.error(error_msg)
         raise OSError(err)
     return [o for o in out.decode().split('\n') if o] if split else out.decode()
 
@@ -84,11 +86,11 @@ def run_ssh_cmd(cmd:str,
     out:str = out.read().decode()
     err:str = err.read().decode()
     if err:
-        error_msg = f"""There was an error:
-                        {err}
+        error_msg = f"""{ic(cmd)} gave an error:
+                        {ic(err)}
                         """
-        logger.error(error_msg, stack_info= True)
-        # raise OSError(err)
+        ic(error_msg)
+        logger.error(error_msg)
     return [o for o in out.split('\n') if o] if split else out
 
 class SSH_Shell():
@@ -99,10 +101,10 @@ class SSH_Shell():
     
     
     def run(self,cmds:str,split:bool):
-        commmand_list: list[str] = cmds.split('\n')
-        commmand_list = [cmd.strip() for cmd in commmand_list if cmd]
+        command_list: list[str] = cmds.split('\n')
+        command_list = [cmd.strip() for cmd in command_list if cmd]
         return [run_ssh_cmd(cmd,self.connection,split=split)
-                for cmd in commmand_list]
+                for cmd in command_list]
     
     def write(self,cmds:str,name:str='shell') -> Path:
         (file_:=Path(name+'.sh')).write_text(dumps({
