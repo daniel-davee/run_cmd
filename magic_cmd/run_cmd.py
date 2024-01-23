@@ -100,6 +100,19 @@ def run_ssh_cmd(cmd:str,
         logger.error(error_msg)
     return [o for o in out.split('\n') if o] if split else out
 
+def scp_file(src:str,
+                des:str,
+                connection:SSH_Connection, 
+                ) -> tuple[str, str]:
+    ip, key_file, username = connection
+    client = SSHClient()
+    client.load_host_keys(know_host.as_posix())
+    client.set_missing_host_key_policy(AutoAddPolicy())
+    client.connect(ip,username=username, key_filename=key_file)
+    sftp = client.open_sftp()
+    sftp.put(src,des)
+    sftp.close()
+    client.close()
 class SSH_Shell():
     
      
