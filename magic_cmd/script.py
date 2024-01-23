@@ -24,17 +24,23 @@ class Script():
                  cmds:str='',
                  name:str= 'script',
                  engine:Engine=Shell(),
+                 clean_on_append:bool=False,
                 ):
         self.engine:Engine = engine
         self.cmds:str = self.engine.clean(cmds)
         self.name:str = name
+        self.clean_on_append = clean_on_append
 
     def __add__(self,cmd: Union[Script,str])->str:
         match(cmd):
-            case str(): cmd = self.engine.clean(cmd)
-            case Script() if self.engine.__class__!=cmd.engine.__class__: 
+            case str() if self.clean_on_append:#if clean on append clean cmd 
+                cmd = self.engine.clean(cmd)
+            case str():# if not do nothing
+                ...
+            case Script() if self.engine.__class__!=cmd.engine.__class__:#engines don't match 
                 raise Exception(f'{cmd.engine.__class__} does not match{self.engine.__class__}')
-            case Script(): cmd = cmd.cmds
+            case Script(): # combine two scripts
+                cmd = cmd.cmds
         return Script('\n'.join([self.cmds,cmd]))
     
     def __iadd__(self,cmd: Union[Script,str])->Script:
