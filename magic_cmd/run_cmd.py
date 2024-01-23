@@ -6,6 +6,7 @@ from inspect import getframeinfo, currentframe
 from paramiko import SSHClient, AutoAddPolicy
 from json import dumps
 from icecream.icecream import ic
+from itertools import takewhile
 logger = Logger(__name__)
 logger.set_log_file_basename('run_cmd')
 logger.set_minimum_level(logger.logLevels['info'])
@@ -55,7 +56,9 @@ def clean_cmd(cmds:Union[list[str],str]) -> str:
             cmds:list[str] = [cmd for cmd in cmds.split('\n') if cmd]
         case list():
             cmds=cmds
-    return '\n'.join([cmd.strip() for cmd in cmds])
+    cmds = [cmd.rstrip() for cmd in cmds]
+    white_spaces = sum( 1 for _ in takewhile(str.isspace,cmds[0]) )
+    return '\n'.join([cmd.replace(' ', '', white_spaces) for cmd in cmds])
 class Shell():
     
     def run(self,cmds:str,split:bool):

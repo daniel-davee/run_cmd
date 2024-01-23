@@ -60,7 +60,9 @@ class Script():
         if lazy:
             return self.engine.write(self.cmds,name=name)
         return self.engine.run(self.cmds,split=split)
-        
+    
+    def __eq__(self, __value: object) -> bool:
+        return str(self) == __value 
 
     def append(self,cmd:Union[Script,str])->None:
         self.cmds += cmd

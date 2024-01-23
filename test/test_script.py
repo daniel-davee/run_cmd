@@ -37,5 +37,11 @@ def test_clean():
     '''
     test:Script = Script('''
                             echo foo
+                                echo bar
                             ''')
-    assert str(test) == 'echo foo\n'
+    res = '''echo foo
+    echo bar
+'''
+    print(test)
+    print(res)
+    assert test == res
