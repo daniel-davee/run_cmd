@@ -39,8 +39,10 @@ def run_cmd(cmd:str, split:bool=False) -> Union[list[str],str]:
     logger.debug(debug_msg)
     
     if err:
-        error_msg = f"""{ic(cmd)} gave an error:
-                        {ic(err)}
+        ic(cmd)
+        ic(err)
+        error_msg = f"""{cmd} gave an error:
+                        {err}
                         """
         ic(error_msg)
         logger.error(error_msg)
@@ -86,8 +88,10 @@ def run_ssh_cmd(cmd:str,
     out:str = out.read().decode()
     err:str = err.read().decode()
     if err:
-        error_msg = f"""{ic(cmd)} gave an error:
-                        {ic(err)}
+        ic(cmd)
+        ic(err)
+        error_msg = f"""{cmd} gave an error:
+                        {err}
                         """
         ic(error_msg)
         logger.error(error_msg)
