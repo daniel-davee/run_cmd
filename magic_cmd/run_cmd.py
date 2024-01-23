@@ -55,9 +55,9 @@ def clean_cmd(cmds:Union[list[str],str]) -> str:
 class Shell():
     
     def run(self,cmds:str,split:bool):
-        commmand_list: list[str] = cmds.split('\n')
-        commmand_list = [cmd.strip() for cmd in commmand_list if cmd]
-        return [run_cmd(cmd,split=split) for cmd in commmand_list]
+        command_list: list[str] = cmds.split('\n')
+        command_list = [cmd.strip() for cmd in command_list if cmd]
+        return [run_cmd(cmd,split=split) for cmd in command_list]
     
     def write(self,cmds:str,name:str='shell') -> Path:
         (file_:=Path(name+'.sh')).write_text(cmds)
@@ -88,7 +88,7 @@ def run_ssh_cmd(cmd:str,
                         {err}
                         """
         logger.error(error_msg, stack_info= True)
-        raise OSError(err)
+        # raise OSError(err)
     return [o for o in out.split('\n') if o] if split else out
 
 class SSH_Shell():
